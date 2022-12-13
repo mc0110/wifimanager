@@ -93,7 +93,9 @@ class Nanoweb:
          * callable, the output of which is sent to the client
         """
         while True:
+            if self.debug: print("handler: ", type(handler))
             if isinstance(handler, dict):
+                if self.debug: print("DICT-Handler: ", request.url, str(handler))
                 handler = (request.url, handler)
 
             if isinstance(handler, str):
