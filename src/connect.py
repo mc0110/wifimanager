@@ -1,10 +1,11 @@
-import network, os, sys, time
+import network, os, sys, time, json
 from crypto_keys import fn_crypto as crypt
 
 
 class Wifi():
     
     CRED_FN = "credentials.dat"
+    CRED_JSON = "cred.json"
     run_fn = "run_mode.dat"
     ap_if = None
     sta_if = None
@@ -25,6 +26,10 @@ class Wifi():
         if self.platform == 'rp2':
             import rp2
             rp2.country('DE')    
+
+    def read_cred_json(self):
+        with open(self.CRED_JSON, "r") as f: j=json.load(f)
+        return j
 
     def connect(self):
         if not(self.creds()):
