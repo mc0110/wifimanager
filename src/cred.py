@@ -46,15 +46,15 @@ def update_repo():
     tree = "github:mc0110/wifimanager"
 
     env = [
-        ["/lib/", "nanoweb.py", "/test/lib/"],
-    #    ["/", "cred.json", "/test/"],
-    #    ["/", "connect.py", "/test/"],
-        ["/src/", "crypto_keys.py", "/test/"],
-    #    ["/", "gen_html.py", "/test/"],
-    #    ["/", "main.py", "/test/"],
-    #    ["/", "main1.py", "/test/"],
-        ["/src/", "web_os.py", "/test/"],
-        ["/src/", "web_os_run.py", "/test/"],
+        ["/lib/", "nanoweb.py", "/test/lib"],
+        ["/src/", "cred.py", "/test"],
+        ["/src/", "connect.py", "/test"],
+        ["/src/", "crypto_keys.py", "/test"],
+        ["/src/", "gen_html.py", "/test"],
+        ["/src/", "main.py", "/test"],
+        ["/src/", "main1.py", "/test"],
+        ["/src/", "web_os.py", "/test"],
+        ["/src/", "web_os_run.py", "/test"],
         ]
 
     for i in range(len(env)):

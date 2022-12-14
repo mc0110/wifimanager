@@ -112,15 +112,6 @@ class Gen_Html():
         tmp += "<input name='ButtonName' type='submit' class='button' value='" + name + "'></form> \n"
         return tmp
 
-    def handleFileAction(self, link, dir, fn):
-        tmp = "<form action='" + link + dir + " 'method='GET'>"
-        tmp += "<input name='dir' type='hidden' value='" + dir + "'>"
-        tmp += "<input name='fn' type='hidden' value='" + fn + "'>"
-        tmp += "<input name='button' type='submit' class='button_s' value='Download'>"
-        tmp += "<input name='button' type='submit' class='button_s' value='Delete'>"
-        tmp += "<label class='label_style'>" + fn + "</label>"
-        tmp += "</form> \n"
-        return tmp
 
     def handlePost(self, path, name, txt, val): 
       tmp = "<div>"
@@ -162,6 +153,16 @@ class Gen_Html():
         tmp += self.handleFooter("/","Back", "")
         return tmp
 
+    def handleFileAction(self, link, dir, fn):
+        tmp = "<form action='" + link + dir + " 'method='GET'>"
+        tmp += "<input name='dir' type='hidden' value='" + dir + "'>"
+        tmp += "<input name='fn' type='hidden' value='" + fn + "'>"
+        tmp += "<input name='button' type='submit' class='button_s' value='Download'>"
+        tmp += "<input name='button' type='submit' class='button_s' value='Delete'>"
+        tmp += "<label class='label_style'>" + fn + "</label>"
+        tmp += "</form> \n"
+        return tmp
+    
     def handleUpload(self, dir):
         dir1 = dir
         if dir == "/":
@@ -254,7 +255,7 @@ class Gen_Html():
                 tmp += self.handleGet("/rc","Restore Credentials")
                 
         
-        tmp += "<p><form action='/creds_processing' method='POST'> \n"
+        tmp += "<p><form action='/cp' method='POST'> \n"
 
         # json-format: key,[type, entryname, order]
         entries = sorted(json_form.items(), key=lambda x:x[1][2])

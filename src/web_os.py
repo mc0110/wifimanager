@@ -56,7 +56,7 @@ async def scan_networks(r):
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     await r.write(gh.handleScan_Networks())
 
-async def creds_processing(r):
+async def cp(r):
     json = {}
     # convert JSON to json_result = {key: value}
     for i in gh.JSON.keys():        
@@ -95,6 +95,22 @@ async def res_cred(r):
     print("Credentials restored")
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     await r.write(gh.handleCredentials(gh.JSON))
+    
+async def ur(r):
+    if gh.wifi.set_sta():
+        await r.write("HTTP/1.1 200 OK\r\n\r\n")
+        await r.write(gh.handleMessage("Repo will be updated", "/ur1", "Continue"))
+    else:
+        await r.write("HTTP/1.1 200 OK\r\n\r\n")
+        await r.write(gh.handleMessage("You need a STA-internet-connection", "/", "Back"))
+
+async def ur1(r):
+    import cred
+    cred.update_repo()    
+    gh.refresh_connect_state()
+    print("Repo is updated")
+    await r.write("HTTP/1.1 200 OK\r\n\r\n")
+    await r.write(gh.handleMessage("Repo is updated", "/", "Back"))
 
 async def reboot(r):
     await r.write("HTTP/1.1 200 OK\r\n\r\n")

@@ -1,3 +1,22 @@
+# MIT License
+#
+# Copyright (c) 2022  Dr. Magnus Christ (mc0110)
+#
+# This is part of the wifimanager package
+# 
+# 
+# Functionalities: The module establishes a Wifi connection. 
+# This is done either via an STA connection or if no credentials are available,
+# via an AP connection on 192.168.4.1. 
+# It is possible to establish both connections in parallel.
+#
+# Further functionalities:
+#     Reading / writing a json file for the credentials
+#     Wifi-network scan
+#     Reading / writing encrypted credentials from / to file
+
+
+
 import network, os, sys, time, json
 from crypto_keys import fn_crypto as crypt
 
@@ -213,7 +232,8 @@ class Wifi():
         print("STA connection connected successful")
         print(self.get_state())
         return self.sta_if
-    
+
+    # write values from the given dict (l) to crypt-file (needs crypto_keys_lib)
     def store_creds(self, l):
         self.delete_creds()
         with open(self.cred_fn, "wb") as fn:
@@ -223,6 +243,7 @@ class Wifi():
             c.fn_write_eof_encrypt(fn)
             fn.close()
 
+    # take and decrypt the values from encrypted file into the given dict (l) -> return
     def read_creds(self, l):
         ro = {}
         if self.creds():
