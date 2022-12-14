@@ -3,12 +3,14 @@
 
 This is a very small web manager for different hw ports under micropython, based on [nanoweb](https://github.com/hugokernel/micropython-nanoweb) - tested with ESP32 and RPI pico w. On the basis of the mip-module, the installation process as well as subsequent updates can be carried out over the air (ota).
 
+*Note: wifimanager uses a modified nanoweb-version and wouldn't run with the original version*
+
 ![grafik](https://user-images.githubusercontent.com/10268240/207604186-1b687d86-4c5b-4c00-9ad8-e96c6fb0194f.png)
 
 ### Key features:
-  - Automatic establishing of a Wifi connection
+  - Automatic establishing the Wifi connection
     - If a correct credential file is available - as station connection (STA).
-    - In fallback, an access point (AP) is opened under 192.168.4.1
+    - In fallback-case (no connection with the credentials or no credentials), an access point (AP) is opened under 192.168.4.1
   - Input of credentials json-controlled (any number of keys are possible)
   - OTA update of a GITHUB repro possible 
   - Simple filesystem operations are supported
