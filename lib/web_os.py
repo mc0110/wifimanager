@@ -7,7 +7,7 @@
 # 
 from machine import reset
 from time import sleep
-from gen_html import Gen_Html
+from lib.gen_html import Gen_Html
 from nanoweb import HttpError, Nanoweb, send_file
 
 
@@ -105,7 +105,7 @@ async def ur(r):
         await r.write(gh.handleMessage("You need a STA-internet-connection", "/", "Back"))
 
 async def ur1(r):
-    import cred
+    import bootloader.cred as cred
     cred.update_repo()    
     gh.refresh_connect_state()
     print("Repo is updated")

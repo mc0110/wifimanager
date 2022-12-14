@@ -5,12 +5,12 @@
 # This is part of the wifimanager package
 # 
 import time
-import connect
+import lib.connect as connect
 
 #sleep to give some boards time to initialize, for example Rpi Pico W
 time.sleep(3)
 
-import connect
+import lib.connect as connect
 w=connect.Wifi()
 
 if w.run_mode():

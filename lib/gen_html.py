@@ -1,5 +1,5 @@
 import os, machine
-import connect
+import lib.connect as connect
 import gc
 
 class Gen_Html():

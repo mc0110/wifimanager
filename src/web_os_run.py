@@ -6,7 +6,7 @@
 # 
 # This snippet should you include in your software project to use the wifi manager 
 
-import web_os
+import lib.web_os as web_os
 from nanoweb import Nanoweb
 import uasyncio as asyncio
 
