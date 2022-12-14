@@ -194,7 +194,7 @@ class Wifi():
 
     def set_sta(self, sta=-1):  
         if sta == -1:  # default value returns current state
-            return int((self.sta_if.ifconfig()[0] != '0.0.0.0'))
+            return int((self.sta_if != None))
         self.sta_if = network.WLAN(network.STA_IF)
         time.sleep_ms(1)     # without delay we see on an ESP32 a system fault and reboot
         self.sta_if.active(sta)   # activate the interface
