@@ -46,6 +46,7 @@ for i in range(len(env)):
 
 
 import cred
+cred.set_cred_json()
 cred.update_repo()
 
 import main
