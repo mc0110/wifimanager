@@ -1,3 +1,10 @@
+# MIT License
+#
+# Copyright (c) 2022  Dr. Magnus Christ (mc0110)
+#
+# This is part of the wifimanager package
+# 
+# 
 from machine import reset
 from time import sleep
 from gen_html import Gen_Html

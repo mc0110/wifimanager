@@ -30,6 +30,10 @@ class Wifi():
     def read_cred_json(self):
         with open(self.CRED_JSON, "r") as f: j=json.load(f)
         return j
+    
+    def write_cred_json(self, j):
+        with open(self.CRED_JSON, "w") as f: json.dump(j, f)
+        return
 
     def connect(self):
         if not(self.creds()):
@@ -153,8 +157,9 @@ class Wifi():
             self.ap_if.config(ssid="Pico")
             self.ap_if.config(password="password")
         if self.platform == 'esp32':
-            self.ap_if.config(ssid="ESP32")
-            self.ap_if.config(password="password")
+            pass
+#            self.ap_if.config(ssid="ESP32")
+#            self.ap_if.config(password="password")
             
         self.ap_if.active(sta)   # activate the interface
         time.sleep(1)
