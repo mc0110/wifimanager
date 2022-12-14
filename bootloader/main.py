@@ -29,7 +29,7 @@
 
 
 
-import time, os
+import time, machine
 import mip
 #sleep to give some boards time to initialize, for example Rpi Pico W
 time.sleep(3)
@@ -51,4 +51,4 @@ import cred
 cred.set_cred_json()
 cred.update_repo()
 
-import main
+machine.reset()
