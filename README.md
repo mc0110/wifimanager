@@ -1,5 +1,19 @@
+<div align = center>
+
 # wifimanager
+
 ## micropython nano-os with ota-functionality
+
+[![Badge License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt)
+ &nbsp;
+[![Badge Version](https://img.shields.io/github/v/release/mc0110/wifimanager?include_prereleases&color=yellow&logo=DocuSign&logoColor=white)](https://github.com/mc0110/wifimanager/blob/main/README.md)
+ &nbsp; 
+![Badge Hit Counter](https://visitor-badge.laobi.icu/badge?page_id=https://github.com/mc0110/wifimanager/README.md)
+<br/>
+<br/>
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
+
+</div>
 
 This is a very small web manager for different hw ports under micropython, based on [nanoweb](https://github.com/hugokernel/micropython-nanoweb) - tested with ESP32 and RPI pico w. 
 
