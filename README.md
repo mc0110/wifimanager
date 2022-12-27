@@ -39,6 +39,7 @@ Use this commands to connect to the network and to start the download-process
      import main
 
 After the software download, the normal start procedure starts, as shown in the diagram.
+
 ![grafik](https://user-images.githubusercontent.com/10268240/209683247-f2933c8e-2d4a-4426-8daa-72aebb05621c.png)
 
 The port (ESP32/ RPI pico w) starts with an AP on ***ip: 192.168.4.1*** (at port 80).  (AccessPoint on ESP32 is without password, on RPI pico w SSID: 'PICO', password: 'password') Therefore, the connection must first be established with the mobile phone or computer. The page can be called after that. 
