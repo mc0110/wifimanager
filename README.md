@@ -1,16 +1,20 @@
 # wifimanager
 ## micropython nano-os with ota-functionality
 
-This is a very small web manager for different hw ports under micropython, based on [nanoweb](https://github.com/hugokernel/micropython-nanoweb) - tested with ESP32 and RPI pico w. On the basis of the mip-module, the installation process as well as subsequent updates can be carried out over the air (ota).
+This is a very small web manager for different hw ports under micropython, based on [nanoweb](https://github.com/hugokernel/micropython-nanoweb) - tested with ESP32 and RPI pico w. 
+
+
+On the basis of the mip-module, the installation process as well as subsequent updates can be carried out over the air (ota).
 
 *Note: wifimanager uses a modified nanoweb-version and wouldn't run with the original version*
+
 
 ![grafik](https://user-images.githubusercontent.com/10268240/207604186-1b687d86-4c5b-4c00-9ad8-e96c6fb0194f.png)
 
 ### Key features:
   - Automatic establishing the Wifi connection
-    - If a correct credential file is available - as station connection (STA).
-    - In fallback-case (no connection with the credentials or no credentials), an access point (AP) is opened under 192.168.4.1
+    - an access point (AP) is opened under 192.168.4.1
+    - additionally, if a correct credential file is available - as station connection (STA) with dhcp-ip-address.
   - Input of credentials json-controlled (any number of keys are possible)
   - OTA update of a GITHUB repro possible 
   - Simple filesystem operations are supported
@@ -19,6 +23,9 @@ This is a very small web manager for different hw ports under micropython, based
 
 
 ### Install-process
+
+The installation process requires a terminal-based connection once after microPython has been installed on the port. The few lines must be entered to establish a Wifi internet connection. This will then automatically load all programme parts and reboot the port.
+
 Use this commands to connect to the network and to start the download-process
 
      import network
@@ -31,8 +38,14 @@ Use this commands to connect to the network and to start the download-process
 
      import main
 
-#### Establish a connection with the AP
-The import of the ***main-module*** starts the reloading of all modules. The port will then reset and restart. If the download was successful, the json file and all modules are now in the file system. Since the confidential credentials are still missing, the port (ESP32/ RPI pico w) starts with an AP on ***ip: 192.168.4.1*** (at port 80).  (AccessPoint on ESP32 is without password, on RPI pico w SSID: 'PICO', password: 'password') Therefore, the connection must first be established with the mobile phone or computer. The page can be called after that. 
+After the software download, the normal start procedure starts, as shown in the diagram.
+![grafik](https://user-images.githubusercontent.com/10268240/209683247-f2933c8e-2d4a-4426-8daa-72aebb05621c.png)
+
+The port (ESP32/ RPI pico w) starts with an AP on ***ip: 192.168.4.1*** (at port 80).  (AccessPoint on ESP32 is without password, on RPI pico w SSID: 'PICO', password: 'password') Therefore, the connection must first be established with the mobile phone or computer. The page can be called after that. 
+
+#### *OS-run* vs. *normal run*
+
+The chip is now in OS-run mode until the button in the web menu is switched back accordingly. Switching to *normal-run* mode deactivates the web frontend at the next system start and starts normal operation, provided that the prerequisites are met (credentials have been created, Wifi connection is established). Since the web OS modules are not loaded in this case, all resources (especially RAM) are fully available for the original application. 
 
 ### Credentials
 
