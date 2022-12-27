@@ -22,8 +22,11 @@ On the basis of the mip-module, the installation process as well as subsequent u
 
 *Note: wifimanager uses a modified nanoweb-version and wouldn't run with the original version*
 
+<div align = center>
 
 ![grafik](https://user-images.githubusercontent.com/10268240/207604186-1b687d86-4c5b-4c00-9ad8-e96c6fb0194f.png)
+
+</div>
 
 ### Key features:
   - Automatic establishing the Wifi connection
@@ -54,7 +57,11 @@ Use this commands to connect to the network and to start the download-process
 
 After the software download, the normal start procedure starts, as shown in the diagram.
 
+<div align = center>
+
 ![grafik](https://user-images.githubusercontent.com/10268240/209683247-f2933c8e-2d4a-4426-8daa-72aebb05621c.png)
+
+</div>
 
 The port (ESP32/ RPI pico w) starts with an AP on ***ip: 192.168.4.1*** (at port 80).  (AccessPoint on ESP32 is without password, on RPI pico w SSID: 'PICO', password: 'password') Therefore, the connection must first be established with the mobile phone or computer. The page can be called after that. 
 
@@ -66,7 +73,11 @@ The chip is now in OS-run mode until the button in the web menu is switched back
 
 The entry of credentials is json-file controlled and thus also allows the additional possibility of entering mqtt-broker and username or password but also clickboxes for entering control flags.
 
+<div align = center>
+
 ![grafik](https://user-images.githubusercontent.com/10268240/207604232-6f174b29-db72-4010-8b7f-aacdb80795ee.png)
+
+</div>
 
 For the proper functioning of the ***connect-module***, the keys ***"SSID", "WIFIPW", "HOSTNAME"*** should be included.
 Any other keys can be added
