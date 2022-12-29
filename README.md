@@ -17,10 +17,11 @@
 
 This is a very small web manager for different hw ports under micropython, based on [nanoweb](https://github.com/hugokernel/micropython-nanoweb) - tested with ESP32 and RPI pico w. 
 
-
 On the basis of the mip-module, the installation process as well as subsequent updates can be carried out over the air (ota).
 
-*Note: wifimanager uses a modified nanoweb-version and wouldn't run with the original version*
+The wifimanager can be integrated into own projects and thus complement wifi-support as well as ota-function. An example of integration is demonstrated in [inetbox2mqtt](https://github.com/mc0110/inetbox2mqtt).
+
+
 
 <div align = center>
 
@@ -99,6 +100,9 @@ You find the definition in ***cred.py***. If you change something, you have to c
 
 The download page and the desired py-modules are also to be adapted in ***cred.py***. The routine ***cred.update_repo()*** can be called via the web menu.
 
+If you want to use the OTA function for your own repos, you only need an adapted ***cred.py*** that points to your repo. You can also pull the files from several repos.
+
+
     tree = "github:mc0110/wifimanager"
 
     env = [
@@ -117,3 +121,5 @@ The download page and the desired py-modules are also to be adapted in ***cred.p
     for i in range(len(env)):
         mip.install(tree+env[i][0]+env[i][1], target= env[i][2])
 
+
+*Note: wifimanager uses a modified nanoweb-version and wouldn't run with the original version*
