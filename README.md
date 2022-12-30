@@ -42,6 +42,8 @@ The wifimanager can be integrated into own projects and thus complement wifi-sup
 
 ### Install-process
 
+#### Alternative 1: 
+
 The installation process requires a terminal-based connection once after microPython has been installed on the port. The few lines must be entered to establish a Wifi internet connection. This will then automatically load all programme parts and reboot the port.
 
 Use this commands to connect to the network and to start the download-process
@@ -57,6 +59,18 @@ Use this commands to connect to the network and to start the download-process
      import main
 
 After the software download, the normal start procedure starts, as shown in the diagram.
+
+#### Alternative 2: With esptool - only works with the ESP32
+
+The .bin file (pls unzip the doc from bin-dictionary) contains both the python and the .py files. This allows the whole project to be flashed onto the ESP32.
+
+For this, you can use the esptool. In my case, it finds the serial port of the ESP32 automatically, but the port can also be specified. The ESP32 must be in programming mode (GPIO0 to GND at startup). The command to flash the complete .bin file to the ESP32 is:
+
+    esptool.py write_flash 0 flash_esp32_wifimanager_v01_4M.bin
+
+This is not a partition but the full image for the ESP32 and only works with the 4MB chips. The address 0 is not a typo.
+
+After flashing, please reboot the ESP32. An access point should be opened and you can use a browser to communicate via http://192.168.4.1
 
 <div align = center>
 
