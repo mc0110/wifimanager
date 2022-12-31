@@ -6,12 +6,15 @@
 # 
 import time
 import lib.connect as connect
+appname = "wifimanager"
+
 
 #sleep to give some boards time to initialize, for example Rpi Pico W
 time.sleep(3)
 
-import lib.connect as connect
 w=connect.Wifi()
+w.set_appname(appname)
+
 
 if w.creds() and w.set_sta(1) and w.run_mode():
     print("Normal mode activated - for change to OS-mode type in terminal:")
