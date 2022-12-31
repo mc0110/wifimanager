@@ -22,7 +22,6 @@ async def command_loop():
         if connect.reboot:
             await asyncio.sleep(10) # Update every 10sec
             reset()    
-        connect.set_led(2)
         
         
 def run(w):
