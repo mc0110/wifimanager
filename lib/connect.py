@@ -34,6 +34,7 @@ class Wifi():
     platform = ""
     python = ""
     appname = "undefined"
+    reboot = False
         
     def __init__(self, fn=None):
         self.connect_log = ""
@@ -44,6 +45,7 @@ class Wifi():
         self.platform = str(sys.platform)
         self.python = '{} {} {}'.format(sys.implementation.name,'.'.join(str(s) for s in sys.implementation.version), sys.implementation._mpy)
         print("Detected " + self.python + " on port: " + self.platform)
+        self.reboot = False
         if self.platform == 'rp2':
             import rp2
             rp2.country('DE')    
