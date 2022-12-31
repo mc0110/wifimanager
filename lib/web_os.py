@@ -129,7 +129,7 @@ async def reboot(r):
     global gh
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     await r.write(gh.handleMessage("Device will be rebooted", "/", "Continue"))
-    gh.reboot = True
+    gh.wifi.reboot = True
 
 
 async def upload(r):

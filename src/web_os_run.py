@@ -18,8 +18,11 @@ connect = None
 async def command_loop():
     global connect
     while True:
-        await asyncio.sleep(2) # Update every 10sec
-        if connect.reboot: reset()    
+        await asyncio.sleep(0.5) # Update every 10sec
+        if connect.reboot:
+            await asyncio.sleep(10) # Update every 10sec
+            reset()    
+        connect.set_led(2)
         
         
 def run(w):
