@@ -18,6 +18,7 @@
 
 
 import network, os, sys, time, json
+# import tools
 from lib.crypto_keys import fn_crypto as crypt
 
 
@@ -34,7 +35,7 @@ class Wifi():
     platform = ""
     python = ""
     appname = "undefined"
-    reboot = False
+
         
     def __init__(self, fn=None):
         self.connect_log = ""
@@ -45,11 +46,21 @@ class Wifi():
         self.platform = str(sys.platform)
         self.python = '{} {} {}'.format(sys.implementation.name,'.'.join(str(s) for s in sys.implementation.version), sys.implementation._mpy)
         print("Detected " + self.python + " on port: " + self.platform)
-        self.reboot = False
+        # tools.set_led("D8",0)
+        # tools.set_led("MQTT",0)        
         if self.platform == 'rp2':
             import rp2
-            rp2.country('DE')    
-
+            rp2.country('DE')
+            
+    # def set_led(self, s=0):
+    #     if s == 1:
+    #         tools.set_led("MQTT", 1)
+    #         return
+    #     if s == 2:
+    #         tools.toggle_led("MQTT")
+    #     else:
+    #         tools.set_led("MQTT", 0)
+        
     def read_cred_json(self):
         with open(self.CRED_JSON, "r") as f: j=json.load(f)
         return j
@@ -57,7 +68,7 @@ class Wifi():
     def write_cred_json(self, j):
         with open(self.CRED_JSON, "w") as f: json.dump(j, f)
         return
-        
+
     def set_appname(self, an):
         self.appname = an
 
@@ -76,7 +87,10 @@ class Wifi():
             else: 
                 return 0
         if set == 0:
-            os.remove(self.run_fn)
+            try:
+                os.remove(self.run_fn)
+            except:
+                pass
             return 0
         
 
@@ -190,14 +204,15 @@ class Wifi():
         if not(sta):
             print("AP_WLAN switched off")
             self.ap_if = None
-            return None
+            return 0
         else:
             print("Access-Point enabled")
         print(self.get_state())
-        return self.ap_if
+        return 1
 
 
-    def set_sta(self, sta=-1):  
+    def set_sta(self, sta=-1):
+#        self.set_led(2)
         if sta == -1:  # default value returns current state
             return int((self.sta_if != None))
         self.sta_if = network.WLAN(network.STA_IF)
@@ -217,26 +232,34 @@ class Wifi():
         print('Connecting with credentials to network...')
         self.sta_if.active(False)
         time.sleep(1)
+        err = 0
         try:
             self.sta_if.active(True)
             self.sta_if.connect(ssid, wifipw)
         except:
-            pass
+            err = 1
         # only running on ESP32
         if self.platform == 'esp32':
             self.sta_if.config(hostname = self.hostname)
         i = 0
-        while not(self.sta_if.isconnected()):
+        while not(self.sta_if.isconnected()) and not(err):
             print(".",end='')
             i += 1
             time.sleep(1)
+    #        self.set_led(2)
             if i>60:
                 print("Connection couldn't be established - aborted")
                 self.run_mode(0)
-                return self.set_ap(1)  # sta-cred wrong, established ap-connection
+            #    self.set_led(0)
+                self.set_ap(1)  # sta-cred wrong, established ap-connection
+                return 0  # sta-cred wrong, established ap-connection
+        if err:
+            self.set_ap(1)
+            return 0    
         print("STA connection connected successful")
+    #    self.set_led(1)
         print(self.get_state())
-        return self.sta_if
+        return 1
 
     # write values from the given dict (l) to crypt-file (needs crypto_keys_lib)
     def store_creds(self, l):
