@@ -25,16 +25,15 @@ async def command_loop():
         if gh.reboot:
             await asyncio.sleep(10) # Update every 10sec
             reset()
-        if gh.update:
-            import cred
-            for i in cred.update_repo():
-                print(i)
-                gh.update_comment = i
-                await asyncio.sleep(2) # sleep for 500ms
-            gh.refresh_connect_state()
-#            await asyncio.sleep(20) # Update every 10sec
-            gh.update = False
-        gh.wifi.set_led(2)
+#         if gh.update:
+#             import cred
+#             for i in cred.update_repo():
+#                 print(i)
+#                 gh.update_comment = i
+#                 await asyncio.sleep(2) # sleep for 500ms
+#             gh.refresh_connect_state()
+#             gh.update = False
+#        gh.wifi.set_led(2)
         
 
 # Declare route directly with decorator
