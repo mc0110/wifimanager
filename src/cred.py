@@ -10,7 +10,8 @@
 
 
 def set_cred_json():
-    import connect
+    import json
+    CRED_JSON = "cred.json"
 
 #     j = {
 #      "SSID": ["text", "SSID:", "1"],
@@ -30,10 +31,8 @@ def set_cred_json():
      "UN": ["text", "Broker User:", "4"],
      "UPW": ["text", "Broker password:", "5"],
      "HOSTNAME": ["text", "Hostname:", "6"],
-     }
-
-    w=connect.Wifi()
-    w.write_cred_json(j)
+     }    
+    with open(CRED_JSON, "w") as f: json.dump(j, f)
 
 
 def update_repo():
@@ -67,7 +66,19 @@ def update_repo():
             except:
                 errno += 1
             s = env[i][1]
-            if errno:
-                s += " couldn't be loaded"
-            else: s += " loaded"    
-            yield s
+            st = (errno == 0)
+            yield (s, st)
+
+def read_repo_rel():
+    import mip
+    import time
+    try:
+        mip.install("github:mc0110/wifimanager/src/release.py", target = "/")
+    except:
+        import machine
+        machine.reset()
+    time.sleep(1)    
+    import release
+    q = release.rel_no
+    print("Repo relase-no: " + q)
+    return q

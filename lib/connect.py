@@ -20,6 +20,7 @@
 import network, os, sys, time, json
 # import tools
 from lib.crypto_keys import fn_crypto as crypt
+from machine import reset, soft_reset
 
 
 class Wifi():
@@ -43,8 +44,14 @@ class Wifi():
             self.cred_fn = fn
         else:    
             self.cred_fn = self.CRED_FN
+
+        if not(self.CRED_JSON in os.listdir("/")):
+            import cred
+            cred.set_cred_json()
+
         self.platform = str(sys.platform)
         self.python = '{} {} {}'.format(sys.implementation.name,'.'.join(str(s) for s in sys.implementation.version), sys.implementation._mpy)
+
         print("Detected " + self.python + " on port: " + self.platform)
         # tools.set_led("D8",0)
         # tools.set_led("MQTT",0)        
@@ -65,12 +72,9 @@ class Wifi():
         with open(self.CRED_JSON, "r") as f: j=json.load(f)
         return j
     
-    def write_cred_json(self, j):
-        with open(self.CRED_JSON, "w") as f: json.dump(j, f)
-        return
-
-    def set_appname(self, an):
-        self.appname = an
+#     def write_cred_json(self, j):
+#         with open(self.CRED_JSON, "w") as f: json.dump(j, f)
+#         return
 
     def connect(self):
         if (self.ap_if == None): self.set_ap(1)
@@ -220,9 +224,9 @@ class Wifi():
         if sta == -1:  # default value returns current state
             return int((self.sta_if != None))
         self.sta_if = network.WLAN(network.STA_IF)
-        time.sleep(1)     # without delay we see on an ESP32 a system fault and reboot
+        time.sleep(2)     # without delay we see on an ESP32 a system fault and reboot
         self.sta_if.active(sta)   # activate the interface
-        time.sleep(1)     # without delay we see on an ESP32 a system fault and reboot
+        time.sleep(2)     # without delay we see on an ESP32 a system fault and reboot
         if not(sta):
             print("STA_WLAN switched off")
             self.sta_if = None
@@ -252,9 +256,12 @@ class Wifi():
             i += 1
             time.sleep(1)
     #        self.set_led(2)
-            if i>60:
+            if i>35:
                 print("Connection couldn't be established - aborted")
-                self.run_mode(0)
+                if self.run_mode() < 2:
+                    self.run_mode(0)
+                else:    
+                    soft_reset()
             #    self.set_led(0)
                 self.set_ap(1)  # sta-cred wrong, established ap-connection
                 return 0  # sta-cred wrong, established ap-connection

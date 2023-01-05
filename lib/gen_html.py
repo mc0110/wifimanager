@@ -16,9 +16,6 @@ class Gen_Html():
             "files": 'Filemanager with full access to the ports filesystem. You see the sub-directories as links',
             "": 'No help description available',
         }
-    update = False
-    update_comment = ""
-    reboot = False
     
     # w-parameter is the connect-object    
     def __init__(self, w):
@@ -111,7 +108,7 @@ class Gen_Html():
         if link != "":
             tmp += "<div>"+self.handleGet(link,name)+"</div>"
         tmp += '<br><div class="center">This&nbsp; <span>' + self.CONNECT_STATE["port"] + '</span>&nbsp;  is running on&nbsp; <span>' + self.CONNECT_STATE["python"] + '</span></div>'
-        tmp += '<br><div class="center">' + self.CR_M + '</div>'
+        tmp += '<br><div class="center">' + self.CR_M + 'RelNo:' + self.wifi.rel_no + '</div>'
         tmp += " </body></html>"
         return tmp
 
@@ -149,11 +146,14 @@ class Gen_Html():
         tmp += self.handleGet("/wc","Credentials")
         tmp += self.handleGet("/dir/__","Filemanager")
         tmp += self.handleGet("/ur","Update Repo") + "<p>"
-        if self.wifi.run_mode():
+        if self.wifi.run_mode() == 1:
             tmp += self.handleGet("/rm", "Normal Run")+"<p>"
+        elif self.wifi.run_mode() == 2:
+            tmp += self.handleGet("/rm", "Update-Mode")+"<p>"
         else:    
             tmp += self.handleGet("/rm", "OS-Run")+"<p>"
-        tmp += self.handleGet("/rb","Reboot") + "<p> \n"
+        tmp += self.handleGet("/rb","Soft Reboot") + "<p> \n"
+        tmp += self.handleGet("/rb1","Hard Reboot") + "<p> \n"
         tmp += self.handleFooter()
         return tmp
 

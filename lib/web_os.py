@@ -5,7 +5,7 @@
 # This is part of the wifimanager package
 # 
 # 
-from machine import reset
+from machine import soft_reset, reset
 from gen_html import Gen_Html
 from nanoweb import HttpError, Nanoweb, send_file
 import uasyncio as asyncio
@@ -14,25 +14,46 @@ import gc
 
 def init(w):
     global gh
+    global reboot
+    global soft_reboot
+    global repo_update
     gc.enable()
     gh = Gen_Html(w)
+    reboot = False
+    soft_reboot = False
+    repo_update = False
 
 
 async def command_loop():
-    global gh
+    global reboot
+    global soft_reboot
+    global repo_update
+    global repo_update_comment
     while True:
         await asyncio.sleep(0.5) # Update every 10sec
-        if gh.reboot:
+        if reboot:
             await asyncio.sleep(10) # Update every 10sec
             reset()
-#         if gh.update:
-#             import cred
-#             for i in cred.update_repo():
-#                 print(i)
-#                 gh.update_comment = i
-#                 await asyncio.sleep(2) # sleep for 500ms
-#             gh.refresh_connect_state()
-#             gh.update = False
+        if soft_reboot:
+            await asyncio.sleep(10) # Update every 10sec
+            soft_reset()
+        if repo_update:
+            import cred
+            rel_new = cred.read_repo_rel()
+            repo_update_comment = ""
+            if (rel_new != gh.wifi.rel_no):
+                for i, st in cred.update_repo():
+                    print(i, st)
+                    if st:
+                        repo_update_comment = i + " loaded"
+                    else:
+                        repo_update_comment = i + " not successful"    
+                await asyncio.sleep(2) # sleep for 500ms
+                gh.refresh_connect_state()
+            else:    
+                repo_update_comment = "repo up to date"
+                await asyncio.sleep(5) # sleep
+            repo_update = False
 #        gh.wifi.set_led(2)
         
 
@@ -40,15 +61,19 @@ async def command_loop():
 #@naw.route('/')
 async def index(r):
     global gh
+    global repo_update
+    repo_update = False
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     await r.write(gh.handleRoot())
 
 #@naw.route('/loop')    
 async def loop(r):
-    global gh
+    global repo_update_comment
+    global repo_update
+    
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
-    if gh.update:
-        await r.write(gh.handleMessage("Update is running -> " + gh.update_comment, "/", "Back",("3","/loop")))
+    if repo_update:
+        await r.write(gh.handleMessage("Update is running -> " + repo_update_comment, "/", "Back",("3","/loop")))
     else:    
         await r.write(gh.handleMessage("Update finalized", "/", "Back",("5","/")))
         
@@ -98,8 +123,11 @@ async def toggle_run_mode(r):
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     if not(gh.wifi.creds()):
         await r.write(gh.handleMessage("You couldn't switch run-mode without credentials", "/", "Back",("5","/")))
-    else:    
-        gh.wifi.run_mode(1 - gh.wifi.run_mode())
+    else:
+        a = gh.wifi.run_mode()
+        if a < 2: a += 1
+        else: a=0    
+        gh.wifi.run_mode(a)
         gh.refresh_connect_state()
         await r.write(gh.handleRoot())
 
@@ -133,7 +161,7 @@ async def cp(r):
     gh.wifi.store_creds(json)
     gh.refresh_connect_state()
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
-    await r.write(gh.handleMessage("Credentials are written", "/", "Back",("5","/wc")))
+    await r.write(gh.handleMessage("Credentials are written", "/", "Back",("5","/")))
 #    await r.write(gh.handleRoot())
 
 
@@ -168,7 +196,7 @@ async def res_cred(r):
     await r.write(gh.handleMessage("Credentials are restored", "/", "Back",("5","/")))
 #    await r.write(gh.handleCredentials(gh.JSON))
     
-#@naw.route('/rc')
+#@naw.route('/ur')
 async def ur(r):
     global gh
     if gh.wifi.set_sta():
@@ -178,31 +206,39 @@ async def ur(r):
         await r.write("HTTP/1.1 200 OK\r\n\r\n")
         await r.write(gh.handleMessage("You need a STA-internet-connection", "/", "Back",("5","/")))
 
-#@naw.route('/rc')
+#@naw.route('/ur1')
 async def ur1(r):
     global gh
+    global repo_update
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     print("Repo update initiated")
-    gh.wifi.run_mode(2)
-    await r.write(gh.handleMessage("Repo update initiated", "/", "Back",("5","/rb")))
+#    gh.wifi.run_mode(2)
+#    await r.write(gh.handleMessage("Repo update initiated", "/", "Back",("5","/rb")))
+    repo_update = True
+    await r.write(gh.handleMessage("Repo update initiated", "/", "Back",("5","/loop")))
 
 #@naw.route('/rb')
-async def reboot(r):
-    global gh
+async def s_reboot(r):
+    global soft_reboot
+    soft_reboot = True
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
-    await r.write(gh.handleMessage("Device will be rebooted", "/", "Continue",("4","/")))
-    gh.reboot = True
+    await r.write(gh.handleMessage("Device will be soft rebooted", "/", "Continue",("4","/")))
 
+#@naw.route('/rb1')
+async def h_reboot(r):
+    global reboot
+    reboot = True
+    await r.write("HTTP/1.1 200 OK\r\n\r\n")
+    await r.write(gh.handleMessage("Device will be hard rebooted", "/", "Continue",("4","/")))
 
 #@naw.route('/upload')
 async def upload(r):
     global gh
-    dir = r.url.strip("/upload/")
+    dir = r.url[7:]
     if dir == "__":
         dir = "/"
     else:
         dir = "/" + dir.strip("/") + "/"    
-
     if r.method == "POST":
         # obtain the filename and size from request headers
         filename = r.headers['Content-Disposition'].split('filename=')[1].strip('"')
@@ -217,10 +253,10 @@ async def upload(r):
             f.close()        
         print('Successfully saved file: ' + dir + filename)
         await r.write("HTTP/1.1 201 Upload \r\n" )
+        await send_file(r, gh.handleFiles(dir))
     else:
-        rp = gh.handleFiles(dir)
         await r.write("HTTP/1.1 200 OK\r\n")
-        await send_file(r, rp)
+        await send_file(r, gh.handleFiles(dir))
 
 #@naw.route('/fm*')
 async def fm(r):
@@ -243,9 +279,9 @@ async def fm(r):
         await r.write("Content-Type: application/octet-stream\r\n")
         await r.write("Content-Disposition: attachment; filename=%s\r\n\r\n" % filename)
         await send_file(r, direct+filename)
-        rp = gh.handleFiles(direct)
-        await r.write("HTTP/1.1 200 OK\r\n")
-        await send_file(r, rp)
+        # rp = gh.handleFiles(direct)
+        # await r.write("HTTP/1.1 200 OK\r\n")
+        # await send_file(r, rp)
 
 
 #@naw.route('/dir*')
