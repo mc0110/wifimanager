@@ -293,7 +293,7 @@ class Wifi():
                 elif self.run_mode() > 1:  
                     soft_reset()
 
-                self.set_led(0)
+                #self.set_led(0)
                 self.set_ap(1)  # sta-cred wrong, established ap-connection
                 return 0  # sta-cred wrong, established ap-connection
         if err:
