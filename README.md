@@ -20,7 +20,8 @@ The wifimanager can be integrated into own projects and thus complement wifi-sup
 
 <div align = center>
 
-![grafik](https://user-images.githubusercontent.com/10268240/207604186-1b687d86-4c5b-4c00-9ad8-e96c6fb0194f.png)
+![grafik](https://user-images.githubusercontent.com/10268240/211166613-1f8b4c54-7194-41f0-b4bb-104eb1022d2f.png)
+
 
 </div>
 
@@ -86,7 +87,7 @@ The entry of credentials is json-file controlled and thus also allows the additi
 
 <div align = center>
 
-![grafik](https://user-images.githubusercontent.com/10268240/207604232-6f174b29-db72-4010-8b7f-aacdb80795ee.png)
+![grafik](https://user-images.githubusercontent.com/10268240/211166706-a5043be5-bba3-49a5-a8c7-a2c2f4ef56b2.png)
 
 </div>
 
