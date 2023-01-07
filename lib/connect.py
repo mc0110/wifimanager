@@ -264,7 +264,7 @@ class Wifi():
         self.hostname  = c.get_decrypt_key(self.cred_fn, "HOSTNAME")
         print('Connecting with credentials to network...')
         self.sta_if.active(False)
-        time.sleep(1)
+        time.sleep(2)
         err = 0
         try:
             self.sta_if.active(True)
@@ -279,7 +279,7 @@ class Wifi():
             print(".",end='')
             i += 1
             time.sleep(1)
-    #        self.set_led(2)
+#            self.set_led(2)
             if i>30:
                 print("Connection couldn't be established - aborted")
                 self.sta_if.active(False)
@@ -293,14 +293,14 @@ class Wifi():
                 elif self.run_mode() > 1:  
                     soft_reset()
 
-                #self.set_led(0)
+#                self.set_led(0)
                 self.set_ap(1)  # sta-cred wrong, established ap-connection
                 return 0  # sta-cred wrong, established ap-connection
         if err:
             self.set_ap(1)
             return 0    
         print("STA connection connected successful")
-    #    self.set_led(1)
+#        self.set_led(1)
         print(self.get_state())
         return 1
 
