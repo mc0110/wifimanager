@@ -66,7 +66,7 @@ async def command_loop():
                 repo_update_comment = "repo up to date"
                 await asyncio.sleep(5) # sleep
             repo_update = False
-        gh.wifi.set_led(2)
+#        gh.wifi.set_led(2)
         
 
 # Declare route directly with decorator
