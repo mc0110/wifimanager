@@ -28,6 +28,7 @@ class Wifi():
     CRED_FN = "credentials.dat"
     CRED_JSON = "cred.json"
     run_fn = "run_mode.dat"
+    RUN_MODE = "run_mode.dat"
     ap_if = None
     sta_if = None
     cred_fn = None
