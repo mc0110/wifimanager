@@ -9,7 +9,7 @@ import connect
 import machine
 
 appname = "wifimanager"
-rel_no = "1.0.0"
+rel_no = "1.0.1"
 
 #sleep to give some boards time to initialize, for example Rpi Pico W
 time.sleep(3)
