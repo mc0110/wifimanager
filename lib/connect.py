@@ -17,8 +17,7 @@
 
 
 
-import network, os, sys, time, json
-# import tools
+import network, os, sys, time, json #, tools
 from lib.crypto_keys import fn_crypto as crypt
 from machine import reset, soft_reset
 
@@ -27,7 +26,7 @@ class Wifi():
     
     CRED_FN = "credentials.dat"
     CRED_JSON = "cred.json"
-    run_fn = "run_mode.dat"
+    BOOT_CNT = "boot.dat"
     RUN_MODE = "run_mode.dat"
     ap_if = None
     sta_if = None
@@ -52,10 +51,10 @@ class Wifi():
 
         self.platform = str(sys.platform)
         self.python = '{} {} {}'.format(sys.implementation.name,'.'.join(str(s) for s in sys.implementation.version), sys.implementation._mpy)
-
+        
         print("Detected " + self.python + " on port: " + self.platform)
-        # tools.set_led("D8",0)
-        # tools.set_led("MQTT",0)        
+    #    tools.set_led("D8",0)
+    #    tools.set_led("MQTT",0)        
         if self.platform == 'rp2':
             import rp2
             rp2.country('DE')
@@ -73,9 +72,12 @@ class Wifi():
         with open(self.CRED_JSON, "r") as f: j=json.load(f)
         return j
     
-#     def write_cred_json(self, j):
-#         with open(self.CRED_JSON, "w") as f: json.dump(j, f)
-#         return
+    def write_cred_json(self, j):
+        with open(self.CRED_JSON, "w") as f: json.dump(j, f)
+        return
+
+    def set_appname(self, an):
+        self.appname = an
 
     def connect(self):
         if (self.ap_if == None): self.set_ap(1)
@@ -125,7 +127,7 @@ class Wifi():
             except:
                 pass
             return 0
-        
+
     def get_state(self):
         def get_ap(ap, id):
             if ap == None:
@@ -244,7 +246,7 @@ class Wifi():
 
 
     def set_sta(self, sta=-1):
-#        self.set_led(2)
+    #    self.set_led(2)
         if sta == -1:  # default value returns current state
             return int((self.sta_if != None))
         self.sta_if = network.WLAN(network.STA_IF)
@@ -279,7 +281,7 @@ class Wifi():
             print(".",end='')
             i += 1
             time.sleep(1)
-#            self.set_led(2)
+        #    self.set_led(2)
             if i>30:
                 print("Connection couldn't be established - aborted")
                 self.sta_if.active(False)
@@ -293,14 +295,14 @@ class Wifi():
                 elif self.run_mode() > 1:  
                     soft_reset()
 
-#                self.set_led(0)
+            #    self.set_led(0)
                 self.set_ap(1)  # sta-cred wrong, established ap-connection
                 return 0  # sta-cred wrong, established ap-connection
         if err:
             self.set_ap(1)
             return 0    
         print("STA connection connected successful")
-#        self.set_led(1)
+    #    self.set_led(1)
         print(self.get_state())
         return 1
 
