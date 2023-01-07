@@ -8,12 +8,9 @@ class Gen_Html():
     CONNECT_STATE = ""
 
     HLP_TXT = {
-            "root": '''This manager allows the administration of microPython devices via Wifi connection. The data of Wifi and MQTT broker can be stored in a credentials file even without internet access.
-    Individual files can also be deleted or uploaded/downloaded. The data is stored encrypted on the device. 
-    With an existing internet connection, software can be updated from GITHUB via OTA.
-
+            "root": '''This manager allows the administration of microPython devices via Wifi connection. 
     ''',
-            "files": 'Filemanager with full access to the ports filesystem. You see the sub-directories as links',
+            "files": 'Filemanager with full access to the ports filesystem.',
             "": 'No help description available',
         }
     
@@ -75,7 +72,7 @@ class Gen_Html():
         '''
         return tmp
 
-    def handleHeader(self, title = "", hlpkey = None, refresh = None):
+    def handleHeader(self, title = "", hlpkey = None, refresh = None, status = False):
         def str_keys(pre):
             s = pre.strip("_")+": "
             ap_k = []
@@ -93,13 +90,14 @@ class Gen_Html():
         tmp += "</div>"
         if hlpkey != None:
             tmp += "<div class='help'>" + self.HLP_TXT.get(hlpkey) + "</div>"
-        tmp += "<div class='status'><div class='status_title'>State-info:<br></div>"
-        tmp += str_keys("ap_") + "<br>"
-        tmp += str_keys("sta_") + "<br>"
-        tmp += str_keys("cred_") + "<br>"
-        tmp += str_keys("run_") + "<br>"
-        tmp += str_keys("mem_") + "<br>"
-        tmp += "</div>"
+        if status:    
+            tmp += "<div class='status'><div class='status_title'>State-info:<br></div>"
+            tmp += str_keys("ap_") + "<br>"
+            tmp += str_keys("sta_") + "<br>"
+            tmp += str_keys("cred_") + "<br>"
+            tmp += str_keys("run_") + "<br>"
+            tmp += str_keys("mem_") + "<br>"
+            tmp += "</div>"
         return tmp;
 
 
@@ -131,10 +129,17 @@ class Gen_Html():
         tmp += "<div class='message'>" + message + "</div>"
         tmp += self.handleFooter(blnk,bttn_name)
         return tmp
+    
+    def handleStatus(self, message, blnk, bttn_name, refresh = None):
+        self.refresh_connect_state()
+        tmp = self.handleHeader("Status", None, refresh, status = True)
+        # tmp += "<div class='message'>" + message + "</div>"
+        tmp += self.handleFooter(blnk,bttn_name)
+        return tmp
 
     # Main Page
-    def handleRoot(self, Comment = ""):
-        tmp = self.handleHeader()
+    def handleRoot(self):
+        tmp = self.handleHeader("")
         if self.wifi.set_ap():
             tmp += self.handleGet("/ta","Reset AccessPoint")
         else:    
@@ -154,6 +159,7 @@ class Gen_Html():
             tmp += self.handleGet("/rm", "OS-Run")+"<p>"
         tmp += self.handleGet("/rb","Soft Reboot") + "<p> \n"
         tmp += self.handleGet("/rb1","Hard Reboot") + "<p> \n"
+        tmp += self.handleGet("/s","Status")
         tmp += self.handleFooter()
         return tmp
 
@@ -212,7 +218,7 @@ class Gen_Html():
             tmp += "<br>"
             return tmp
         
-        print("handleFiles dir=", dir)
+        # print("handleFiles dir=", dir)
         if dir[-1] != "/":
             dir = dir + "/"
         if dir[0] != "/":
@@ -247,30 +253,32 @@ class Gen_Html():
 
 
     def handleCredentials(self, json_form):
-        tmp = self.handleHeader("Credentials");
-        tmp += "<p>"+ self.handleGet("/scan","Scan Wifis") + "</p> \n"
+        f = open("cred.html","w")    
+        f.write(self.handleHeader("Credentials"))
+        f.write("<p>"+ self.handleGet("/scan","Scan Wifis") + "</p> \n")
         if self.wifi.creds():
-            tmp +="<p>" + self.handleGet("/dc","Delete Credentials") + "\n"
+            f.write("<p>" + self.handleGet("/dc","Delete Credentials") + "\n")
             if self.wifi.creds_bak():
-                tmp += self.handleGet("/sc","Swap Credentials")
+                f.write(self.handleGet("/sc","Swap Credentials"))
         else:
-            tmp += "<p> Credential-File doesn't exist </p><br> \n"
+            f.write("<p> Credential-File doesn't exist </p><br> \n")
             if self.wifi.creds_bak():
-                tmp += self.handleGet("/rc","Restore Credentials")
+                f.write(self.handleGet("/rc","Restore Credentials"))
                 
         
-        tmp += "<p><form action='/cp' method='POST'> \n"
+        f.write("<p><form action='/cp' method='POST'> \n")
 
         # json-format: key,[type, entryname, order]
         entries = sorted(json_form.items(), key=lambda x:x[1][2])
         for e in entries:
             if e[1][0] == "checkbox":
-                tmp += "<label for='" + e[0] + "'>" + e[1][1] + "</label> <input type='" + e[1][0] + "' name='" + e[0] +"' placeholder='" + e[0] + "' value='True'><br><br> \n"
+                f.write("<label for='" + e[0] + "'>" + e[1][1] + "</label> <input type='" + e[1][0] + "' name='" + e[0] +"' placeholder='" + e[0] + "' value='True'><br><br> \n")
             else:    
-                tmp += "<label for='" + e[0] + "'>" + e[1][1] + "</label> <input type='" + e[1][0] + "' name='" + e[0] +"' placeholder='" + e[0] + "' value=''> <br><br> \n"
-        tmp += "<input type='submit' class='button' name='SUBMIT' value='Store Creds'></form>"
-        tmp += "</p>"    
-        tmp += self.handleFooter()
-        return tmp
+                f.write("<label for='" + e[0] + "'>" + e[1][1] + "</label> <input type='" + e[1][0] + "' name='" + e[0] +"' placeholder='" + e[0] + "' value=''> <br><br> \n")
+        f.write("<input type='submit' class='button' name='SUBMIT' value='Store Creds'></form>")
+        f.write("</p>")    
+        f.write(self.handleFooter())
+        f.close()
+        return "cred.html"
 
 

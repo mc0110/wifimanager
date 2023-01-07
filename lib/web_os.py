@@ -17,11 +17,15 @@ def init(w):
     global reboot
     global soft_reboot
     global repo_update
+    global repo_success
+    global repo_update_comment
     gc.enable()
     gh = Gen_Html(w)
     reboot = False
     soft_reboot = False
     repo_update = False
+    repo_update_comment = ""
+    repo_success = False
 
 
 async def command_loop():
@@ -29,8 +33,9 @@ async def command_loop():
     global soft_reboot
     global repo_update
     global repo_update_comment
+    global repo_success
     while True:
-        await asyncio.sleep(0.5) # Update every 10sec
+        await asyncio.sleep(3) # Update every 10sec
         if reboot:
             await asyncio.sleep(10) # Update every 10sec
             reset()
@@ -38,23 +43,30 @@ async def command_loop():
             await asyncio.sleep(10) # Update every 10sec
             soft_reset()
         if repo_update:
+            await asyncio.sleep(10) # Update every 10sec
+            if not(repo_update): return
             import cred
             rel_new = cred.read_repo_rel()
-            repo_update_comment = ""
+            repo_update_comment = " update to rel: " + rel_new
+            repo_success = True
             if (rel_new != gh.wifi.rel_no):
+                repo_update_comment = " update to rel: " + rel_new
+                await asyncio.sleep(5) # sleep for 5s to send it to browser
+                # loop for update-process
                 for i, st in cred.update_repo():
                     print(i, st)
+                    repo_success = repo_success and st
                     if st:
                         repo_update_comment = i + " loaded"
                     else:
                         repo_update_comment = i + " not successful"    
-                await asyncio.sleep(2) # sleep for 500ms
-                gh.refresh_connect_state()
-            else:    
+                    await asyncio.sleep(5) # sleep for 500ms
+                # gh.refresh_connect_state()
+            else: # no update neccesary   
                 repo_update_comment = "repo up to date"
                 await asyncio.sleep(5) # sleep
             repo_update = False
-#        gh.wifi.set_led(2)
+        gh.wifi.set_led(2)
         
 
 # Declare route directly with decorator
@@ -65,17 +77,29 @@ async def index(r):
     repo_update = False
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     await r.write(gh.handleRoot())
+    
+#@naw.route('/s')
+async def status(r):
+    global gh
+    global repo_update
+    # gh.refresh_connect_state()
+    await r.write("HTTP/1.1 200 OK\r\n\r\n")
+    await r.write(gh.handleStatus("Device status", "/", "Back",("30","/")))
 
 #@naw.route('/loop')    
 async def loop(r):
     global repo_update_comment
     global repo_update
+    global repo_success
     
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     if repo_update:
         await r.write(gh.handleMessage("Update is running -> " + repo_update_comment, "/", "Back",("3","/loop")))
-    else:    
-        await r.write(gh.handleMessage("Update finalized", "/", "Back",("5","/")))
+    else:
+        if repo_success:        
+            await r.write(gh.handleMessage("Update finalized successful, pls reboot device now", "/", "Back",("5","/")))
+        else:    
+            await r.write(gh.handleMessage("Update finalized unsuccessful, pls repeat update", "/", "Back",("5","/")))
         
     
 #@naw.route('/ta')    
@@ -86,7 +110,7 @@ async def toggle_ap(r):
         await r.write(gh.handleMessage("You couldn't release both (AP, STA), then you loose the connection to the port", "/", "Back",("2","/")))
     else:
         gh.wifi.set_ap(not(gh.wifi.set_ap()))
-        gh.refresh_connect_state()
+        # gh.refresh_connect_state()
         await r.write("HTTP/1.1 200 OK\r\n\r\n")
         await r.write(gh.handleRoot())
 
@@ -94,7 +118,7 @@ async def toggle_ap(r):
 async def set_sta(r):
     global gh
     a = gh.wifi.set_sta(1)
-    gh.refresh_connect_state()
+    # gh.refresh_connect_state()
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     if a:
         await r.write(gh.handleMessage("STA-connection established successfull", "/", "Cancel",("5","/")))
@@ -113,7 +137,7 @@ async def toggle_sta(r):
             await r.write(gh.handleMessage("Try to establish a STA-connection", "/", "Cancel",("5","/ts1")))
         else:    
             gh.wifi.set_sta(0)
-            gh.refresh_connect_state()
+            # gh.refresh_connect_state()
             await r.write(gh.handleMessage("STA connection deactivated", "/", "Back",("5","/")))
 #        await r.write(gh.handleRoot())
         
@@ -128,15 +152,16 @@ async def toggle_run_mode(r):
         if a < 2: a += 1
         else: a=0    
         gh.wifi.run_mode(a)
-        gh.refresh_connect_state()
-        await r.write(gh.handleRoot())
+        # gh.refresh_connect_state()
+        await r.write(gh.handleMessage("RUN mode changed", "/", "Back",("5","/")))
 
 #@naw.route('/wc')
 # Generate the credential form    
 async def creds(r):
     global gh
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
-    await r.write(gh.handleCredentials(gh.JSON))
+    await send_file(r, gh.handleCredentials(gh.JSON))
+
 
 #@naw.route('/scan')
 async def scan_networks(r):
@@ -159,7 +184,7 @@ async def cp(r):
     # print("Converted result: ", json)
     # store in credentials.dat in format <key:value>
     gh.wifi.store_creds(json)
-    gh.refresh_connect_state()
+    # gh.refresh_connect_state()
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     await r.write(gh.handleMessage("Credentials are written", "/", "Back",("5","/")))
 #    await r.write(gh.handleRoot())
@@ -170,7 +195,7 @@ async def del_cred(r):
     global gh
     gh.wifi.delete_creds()
     print("Credentials moved to bak")
-    gh.refresh_connect_state()
+    # gh.refresh_connect_state()
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     await r.write(gh.handleMessage("Credentials are deleted", "/", "Back",("5","/wc")))
 #    await r.write(gh.handleCredentials(gh.JSON))
@@ -181,7 +206,7 @@ async def swp_cred(r):
     global gh
     gh.wifi.swap_creds()
     print("Credentials swapped")
-    gh.refresh_connect_state()
+    # gh.refresh_connect_state()
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     await r.write(gh.handleMessage("Credentials are swapped", "/", "Back",("5","/wc")))
 #    await r.write(gh.handleCredentials(gh.JSON))
@@ -190,7 +215,7 @@ async def swp_cred(r):
 async def res_cred(r):
     global gh
     gh.wifi.restore_creds()
-    gh.refresh_connect_state()
+    # gh.refresh_connect_state()
     print("Credentials restored")
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     await r.write(gh.handleMessage("Credentials are restored", "/", "Back",("5","/")))
@@ -211,9 +236,7 @@ async def ur1(r):
     global gh
     global repo_update
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
-    print("Repo update initiated")
-#    gh.wifi.run_mode(2)
-#    await r.write(gh.handleMessage("Repo update initiated", "/", "Back",("5","/rb")))
+    print("Repo update starting ...")
     repo_update = True
     await r.write(gh.handleMessage("Repo update initiated", "/", "Back",("5","/loop")))
 
@@ -279,9 +302,6 @@ async def fm(r):
         await r.write("Content-Type: application/octet-stream\r\n")
         await r.write("Content-Disposition: attachment; filename=%s\r\n\r\n" % filename)
         await send_file(r, direct+filename)
-        # rp = gh.handleFiles(direct)
-        # await r.write("HTTP/1.1 200 OK\r\n")
-        # await send_file(r, rp)
 
 
 #@naw.route('/dir*')
@@ -289,11 +309,9 @@ async def set_dir(r):
     global gh
     new_dir = r.url[5:]
     if new_dir.startswith("__"):
-        rp = gh.handleFiles("/")
         await r.write("HTTP/1.1 200 OK\r\n")
-        await send_file(r, rp)
+        await send_file(r, gh.handleFiles("/"))
     else:
-        rp = gh.handleFiles(new_dir)
         await r.write("HTTP/1.1 200 OK\r\n")
-        await send_file(r, rp)
+        await send_file(r, gh.handleFiles(new_dir))
 
