@@ -38,9 +38,7 @@ time.sleep(3)
 tree = "github:mc0110/wifimanager"
 
 env = [       
-#    ["/lib/", "crypto_keys.py", "/lib"],
-#    ["/lib/", "connect.py", "/lib"],
-    ["/src/", "cred.py", "/"],
+        ["/src/", "cred.py", "/"],    
     ]
 
 for i in range(len(env)):

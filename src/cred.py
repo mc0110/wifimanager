@@ -52,6 +52,7 @@ def update_repo():
         ["/lib/", "web_os.py", "/lib"],
         
         ["/src/", "cred.py", "/"],
+        ["/src/", "release.py", "/"],
         ["/src/", "main.py", "/"],
         ["/src/", "main1.py", "/"],
         ["/src/", "web_os_run.py", "/"],
