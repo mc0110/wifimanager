@@ -71,7 +71,8 @@ I recommend using the OTA update function once after flashing to download the la
 
 <div align = center>
 
-![grafik](https://user-images.githubusercontent.com/10268240/209683247-f2933c8e-2d4a-4426-8daa-72aebb05621c.png)
+![grafik](https://user-images.githubusercontent.com/10268240/211199402-8dc93e2e-7478-46f3-90b2-e0a04cfcc316.png)
+
 
 </div>
 
