@@ -18,7 +18,7 @@
 
 
 import network, os, sys, time, json #, tools
-from crypto_keys import fn_crypto as crypt
+from lib.crypto_keys import fn_crypto as crypt
 from machine import reset, soft_reset
 
 

@@ -10,6 +10,7 @@ from gen_html import Gen_Html
 from nanoweb import HttpError, Nanoweb, send_file
 import uasyncio as asyncio
 import gc
+import re
 
 naw = Nanoweb(100)
 
@@ -29,6 +30,16 @@ def init(w, n):
     repo_update = False
     repo_update_comment = ""
     repo_success = False
+
+
+def unquote(s):
+    if '%' not in s:
+        return s
+    s = s.split("%")
+    a = s[0].encode("utf-8")
+    for i in s[1:]:
+        a = a + bytearray.fromhex(i[:2]) + i[2:].encode("utf-8")
+    return a.decode("utf-8")    
 
 
 async def command_loop():
@@ -180,8 +191,8 @@ async def cp(r):
     for i in r.args.keys():
         if r.args[i]=="True":
             json[i] = "1"
-        else:    
-            json[i] = r.args[i]
+        else:
+            json[i] = unquote(r.args[i])
     gh.wifi.store_creds(json)
     await r.write("HTTP/1.1 200 OK\r\n\r\n")
     await r.write(gh.handleMessage("Credentials are written", "/", "Back",("5","/")))
