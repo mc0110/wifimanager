@@ -18,7 +18,7 @@
 
 
 import network, os, sys, time, json #, tools
-from lib.crypto_keys import fn_crypto as crypt
+from crypto_keys import fn_crypto as crypt
 from machine import reset, soft_reset
 
 
@@ -275,9 +275,9 @@ class Wifi():
             self.sta_if.connect(ssid, wifipw)
         except:
             err = 1
-        # only running on ESP32
-        if self.platform == 'esp32':
-            self.sta_if.config(hostname = self.hostname)
+        # only running on ESP32 - error with new upython-firmware
+#        if self.platform == 'esp32':
+#            self.sta_if.config(hostname = self.hostname)
         i = 0
         while not(self.sta_if.isconnected()) and not(err):
             print(".",end='')
