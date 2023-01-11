@@ -45,11 +45,11 @@ def update_repo():
     tree = "github:mc0110/wifimanager"
 
     env = [
-        ["/lib/", "nanoweb.mpy", "/lib"],
-        ["/lib/", "crypto_keys.mpy", "/lib"],
-        ["/lib/", "connect.mpy", "/lib"],
-        ["/lib/", "gen_html.mpy", "/lib"],
-        ["/lib/", "web_os.mpy", "/lib"],
+        ["/lib/", "nanoweb.py", "/lib"],
+        ["/lib/", "crypto_keys.py", "/lib"],
+        ["/lib/", "connect.py", "/lib"],
+        ["/lib/", "gen_html.py", "/lib"],
+        ["/lib/", "web_os.py", "/lib"],
         
         ["/src/", "cred.py", "/"],
         ["/src/", "release.py", "/"],
